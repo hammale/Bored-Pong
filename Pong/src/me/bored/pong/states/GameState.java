@@ -51,65 +51,80 @@ public class GameState extends BaseState {
     
 	@Override
 	public void init() {
+		Mouse.setGrabbed(true);
 		initGL();
 		LoadTextures.LoadAll();
-        try {
-            Cursor cursor = (CursorLoader.get()).getCursor("res/cursor.png",0,0);
-			Mouse.setNativeCursor(cursor);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-        ball = new Ball(game, 400, 100, 36, 14);
+        ball = new Ball(game, 200, 100, 10, 10);
+        pad1 = new Paddle(game, 0, 100, 10, 30);
+        pad2 = new Paddle(game, 400, 100, 10, 30);
         bg = new BG(game, 0, 0, 600, 800);
-        bg.draw();
-        ball.draw();
 	}
 
 	@Override
 	public void update() {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-		handleInput();
 		bg.draw();
 		
+		handleInput();		
+		handleBall();
+		
 		ball.draw();
+		pad1.draw();
+		pad2.draw();	
+
 		ball.update(getDelta());
+		pad1.update(getDelta());
+		pad2.update(getDelta());
 		
 	    Display.update();
 	    Display.sync(60);
 	}
 	
-	private void handleInput() {
-		pad1.setDX(0);
-		pad1.setDY(0);
-		pad2.setDX(0);
-		pad2.setDY(0);
-		//paddle 1
-		if(Keyboard.isKeyDown(Keyboard.KEY_UP)){
-			
+	private void handleBall(){
+//		if(ball.getDX() == 0){
+//	        ball.setDX(0.02);
+//		}
+//		if(ball.getDY() == 0){
+//	        ball.setDY(0.02);
+//		}
+		if(ball.getY() > HEIGHT || ball.getY() < 0){
+			ball.setDY(ball.getDY()*-1);
+			if(ball.getDY() < 0){
+				ball.setDY(ball.getDX() - 0.01);
+			}else{
+				ball.setDY(ball.getDX() + 0.01);
+			}
 		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_DOWN)){
-			
+		if(ball.getX() > WIDTH || ball.getX() < 0){
+			ball.setDX(ball.getDX()*-1);
+			if(ball.getDX() < 0){
+				ball.setDX(ball.getDX() - 0.01);
+			}else{
+				ball.setDX(ball.getDX() + 0.01);
+			}
 		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT)){
-
+		if(pad1.intersects(ball)){
+	        ball.setDX((ball.getDX()*-1));
+	        ball.setDY((ball.getDY()*-1));
+			if(ball.getDX() < 0){
+				ball.setDX(ball.getDX() - 0.01);
+			}else{
+				ball.setDX(ball.getDX() + 0.01);
+			}
+			if(ball.getDY() < 0){
+				ball.setDY(ball.getDX() - 0.05);
+			}else{
+				ball.setDY(ball.getDX() + 0.05);
+			}
 		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_LEFT)){
-
+	}
+	
+	private void handleInput() {		
+		pad1.setLocation(Mouse.getX(), Mouse.getY());
+		if(pad1.getX() > WIDTH/2){
+			pad1.setX(WIDTH/2);
+			Mouse.setCursorPosition(WIDTH/2, Mouse.getY());
 		}
-		//paddle 2
-		if(Keyboard.isKeyDown(Keyboard.KEY_UP)){
-			
-		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_DOWN)){
-			
-		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_RIGHT)){
-
-		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_LEFT)){
-		
-		}	
-		
 	      while (Keyboard.next()) {
 		      	 if (Keyboard.getEventKey() == Keyboard.KEY_F11) {
 		          	    if (Keyboard.getEventKeyState()) {
@@ -137,7 +152,7 @@ public class GameState extends BaseState {
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, 800, 0, 600, 1, -1);
+		GL11.glOrtho(0, WIDTH, 0, HEIGHT, 1, -1);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		
 		GL11.glEnable(GL11.GL_TEXTURE_2D);

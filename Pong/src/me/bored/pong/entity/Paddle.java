@@ -36,10 +36,4 @@ public class Paddle extends BaseMoveableEntity {
     		GL11.glEnd();
     		 GL11.glLoadIdentity();
         }
-
-        @Override
-        public void update(int delta) {
-                this.x += delta * dx;
-                this.y += delta * dy;
-        }
 }

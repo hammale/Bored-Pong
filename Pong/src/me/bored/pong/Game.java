@@ -23,7 +23,7 @@ public class Game {
 	
 	public static void main(String[] argv) {
 		mainThread = Thread.currentThread();
-		new Game(600, 800, "Bored Pong");
+		new Game(300, 400, "Bored Pong");
 	}
 
 	public void save() {
